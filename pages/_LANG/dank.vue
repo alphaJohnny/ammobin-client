@@ -137,6 +137,53 @@
 <script>
 import MyTable from "~/components/my-table.vue";
 
+const imgs = [
+  require("~/assets/dank/1498947602728.png"),
+  require("~/assets/dank/1500679538846.jpg"),
+  require("~/assets/dank/1503044640624.jpg"),
+  require("~/assets/dank/1503172865134.png"),
+  require("~/assets/dank/1503259235894.png"),
+  require("~/assets/dank/1503291745517.png"),
+  require("~/assets/dank/1503575879905.jpg"),
+  require("~/assets/dank/1503630704362.png"),
+  require("~/assets/dank/1505760501627.png"),
+  require("~/assets/dank/1505955429014.png"),
+  require("~/assets/dank/1506182269779.jpg"),
+  require("~/assets/dank/1507006371355.jpg"),
+  require("~/assets/dank/1508361641201.jpg"),
+  require("~/assets/dank/1509057023285.png"),
+  require("~/assets/dank/1509058728565.jpg"),
+  require("~/assets/dank/1509071586231.jpg"),
+  require("~/assets/dank/1509079883730.jpg"),
+  require("~/assets/dank/1509152268733.jpg"),
+  require("~/assets/dank/1509238662782.jpg"),
+  require("~/assets/dank/1509307142378.jpg"),
+  require("~/assets/dank/1509580117757.jpg"),
+  require("~/assets/dank/1510118121829.jpg"),
+  require("~/assets/dank/1510118334244.jpg"),
+  require("~/assets/dank/1510118452480.jpg"),
+  require("~/assets/dank/1510118967277.jpg"),
+  require("~/assets/dank/1510127109054.jpg"),
+  require("~/assets/dank/1510152048556.jpg"),
+  require("~/assets/dank/1510153214872.jpg"),
+  require("~/assets/dank/1510164669428.jpg"),
+  require("~/assets/dank/1510279063936.jpg"),
+  require("~/assets/dank/1510862801907.jpg"),
+  require("~/assets/dank/1510864948777.jpg"),
+  require("~/assets/dank/1510886024048.jpg"),
+  require("~/assets/dank/canada-ww1-win.jpg"),
+  require("~/assets/dank/colonial-wifo.jpg"),
+  require("~/assets/dank/confirmed.png"),
+  require("~/assets/dank/dam-business.jpg"),
+  require("~/assets/dank/every-russian.jpg"),
+  require("~/assets/dank/k.jpg"),
+  require("~/assets/dank/no-sorry.jpg"),
+  require("~/assets/dank/rcmp-pepe.jpg"),
+  require("~/assets/dank/smell.png"),
+  require("~/assets/dank/svt-moose.jpg"),
+  require("~/assets/dank/Tacticool.jpg")
+];
+
 export default {
   head: {
     title: "Dankest Ammo Items Found Today", //TODO: en francais
@@ -166,13 +213,16 @@ export default {
       },
       showVendors: {},
       defaultImg: require("~/assets/blank.png"),
-
+      img1: imgs[Math.floor(Math.random() * imgs.length)],
+      img2: imgs[Math.floor(Math.random() * imgs.length)],
+      img3: imgs[Math.floor(Math.random() * imgs.length)],
+      img4: imgs[Math.floor(Math.random() * imgs.length)],
       error: null
     };
   },
   computed: {
     filteredRows() {
-      let data = this.rows;
+      let data = this.rows || [];
       let sortKey = this.sortKey;
       let order = this.order;
       let searchQuery = this.searchQuery.toLowerCase();
@@ -230,28 +280,12 @@ export default {
     }
   },
   async asyncData({ error, query, app }) {
-    const imgs = [
-      require("~/assets/dank/every-russian.jpg"),
-      require("~/assets/dank/k.jpg"),
-      require("~/assets/dank/smell.png"),
-      require("~/assets/dank/Tacticool.jpg"),
-      require("~/assets/dank/canada-ww1-win.jpg"),
-      require("~/assets/dank/colonial-wifo.jpg"),
-      require("~/assets/dank/dam-business.jpg"),
-      require("~/assets/dank/no-sorry.jpg"),
-      require("~/assets/dank/rcmp-pepe.jpg"),
-      require("~/assets/dank/svt-moose.jpg")
-    ];
     try {
       let res = await app.$axios.get(BASE_API_URL + "dank");
       const rows = res.data;
       return {
-        rows,
+        rows
         // lazy.....
-        img1: imgs[Math.floor(Math.random() * imgs.length)],
-        img2: imgs[Math.floor(Math.random() * imgs.length)],
-        img3: imgs[Math.floor(Math.random() * imgs.length)],
-        img4: imgs[Math.floor(Math.random() * imgs.length)]
       };
     } catch (e) {
       console.error(e);
