@@ -33,5 +33,10 @@
   "now": {
     "name": "ammobin",
     "alias": "ammobin.now.sh"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "snyk"
+    ]
   }
 }
