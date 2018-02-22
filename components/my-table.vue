@@ -8,7 +8,7 @@
 
       <div class="pure-u-1 pure-u-md-1-6">
         <label for="pageSize"> {{$t('table.pageSize')}}</label>
-        <select id="pageSize" v-model.number="pageSize" class="pure-input-1">
+        <select id="pageSize" :value="pageSize" @change="updatePageSize($event.target.value)"  class="pure-input-1">
           <option>25</option>
           <option>50</option>
           <option>75</option>
@@ -16,22 +16,22 @@
         </select>
       </div>
       <div class="pure-u-1 pure-u-md-1-6">
-        <label for="pageSize"> {{$t('table.calibre')}}</label>
-        <select id="pageSize" :value="calibre" @change="updateCalibre($event.target.value)" class="pure-input-1">
+        <label for="calibre"> {{$t('table.calibre')}}</label>
+        <select id="calibre" :value="calibre" @change="updateCalibre($event.target.value)" class="pure-input-1">
           <option v-for="c in calibres" :key="c">{{c}}</option>
         </select>
       </div>
 
       <div class="pure-u-1 pure-u-md-1-6">
-        <label for="pageSize">{{$t('table.province')}}</label>
-        <select id="pageSize" v-model="province" class="pure-input-1">
+        <label for="province">{{$t('table.province')}}</label>
+        <select id="province" v-model="province" class="pure-input-1">
           <option v-for="c in provinces" :key="c">{{c}}</option>
         </select>
       </div>
 
       <div class="pure-u-1 pure-u-md-1-6">
-        <label for="pageSize">{{$t('table.vendor')}}</label>
-        <select id="pageSize" v-model="vendor" class="pure-input-1">
+        <label for="vendor">{{$t('table.vendor')}}</label>
+        <select id="vendor" v-model="vendor" class="pure-input-1">
           <option v-for="c in vendors" :key="c">{{c}}</option>
         </select>
       </div>
@@ -190,8 +190,7 @@ export default {
     defaultImg: require("~/assets/blank.png"),
     // move these to url params...
     province: null,
-    searchQuery: "",
-    pageSize: 25
+    searchQuery: ""
   }),
   props: ["rows"],
   computed: {
@@ -207,12 +206,15 @@ export default {
     // searchQuery() {
     //   return (this.$route.query || {}).searchQuery;
     // },
-    // pageSize() {
-    //   return Math.min(
-    //     parseInt((this.$route.query || {}).pageSize, 10) || 25,
-    //     100
-    //   );
-    // },
+    pageSize() {
+      if (this.$store.state.isCrawler) {
+        return 100;
+      }
+      return Math.min(
+        parseInt((this.$route.query || {}).pageSize, 10) || 25,
+        100
+      );
+    },
     vendors() {
       if (!this.rows) {
         return [];
@@ -246,8 +248,6 @@ export default {
     },
     // apply filters + sorting + pagination to results
     filteredRows() {
-      this.pageSize = this.$store.state.isCrawler ? 100 : this.pageSize;
-
       let data = JSON.parse(
         JSON.stringify(this.rows && this.rows.length ? this.rows : [])
       ); // super fancy deep list of objects
@@ -424,6 +424,12 @@ export default {
         query: Object.assign({}, this.$route.query, { calibre })
       });
       window.scroll(0, 0); //scroll to top of page
+    },
+    updatePageSize(pageSize) {
+      this.$router.push({
+        path: this.$route.path,
+        query: Object.assign({}, this.$route.query, { pageSize })
+      });
     }
   }
 };

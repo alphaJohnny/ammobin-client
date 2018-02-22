@@ -31,14 +31,13 @@ export default {
     }
 
     return {
-      title: this.calibre + " Centerfire Prices", //TODO: en francais
+      title: this.calibre || "" + " Centerfire Prices", //TODO: en francais
       meta: [
         {
           hid: "description",
           name: "description",
-          content: `The place to view the best ${
-            this.calibre
-          } Centerfire prices across Canada.` //TODO: en francais
+          content: `The place to view the best ${this.calibre ||
+            ""} Centerfire prices across Canada.` //TODO: en francais
         }
       ],
       link
@@ -51,17 +50,53 @@ export default {
     return {
       error: null,
       rows: [],
-      calibre: "",
-      page: 1,
       pages: 1
     };
   },
-  watch: {
-    page: function() {
-      updateUrl("centerfire", this.page, this.calibre);
+  computed: {
+    page() {
+      return parseInt((this.$route.query || {}).page, 10) || 1;
     },
-    calibre: function() {
-      updateUrl("centerfire", this.page, this.calibre);
+    calibre() {
+      return this.$route.query ? this.$route.query.calibre : "";
+    },
+    pageSize() {
+      if (this.$store.state.isCrawler) {
+        return 100;
+      }
+      return parseInt((this.$route.query || {}).pageSize, 10) || 25;
+    }
+  },
+  watch: {
+    page() {
+      this.load();
+    },
+    calibre() {
+      this.load();
+    },
+    pageSize() {
+      this.load();
+    }
+  },
+  methods: {
+    async load() {
+      try {
+        const page = this.page;
+        const calibre = this.calibre || "";
+        const pageSize = this.pageSize || 25;
+
+        let res = await this.$axios.get(
+          BASE_API_URL +
+            `rimfire?calibre=${encodeURIComponent(
+              calibre
+            )}&page=${page}&pageSize=${pageSize}`
+        );
+        this.rows = res.data;
+      } catch (e) {
+        this.statusCode = 500;
+        this.message = "Failed to load prices";
+        this.error = true;
+      }
     }
   },
   async asyncData({ error, query, app }) {
@@ -75,7 +110,7 @@ export default {
           `centerfire?calibre=${encodeURIComponent(calibre)}&page=${page}`
       );
       const rows = res.data;
-      return { rows, calibre, page, pages: Math.ceil(rows.length / pageSize) };
+      return { rows, pages: Math.ceil(rows.length / pageSize) };
     } catch (e) {
       console.error(e);
       return { statusCode: 500, message: "Failed to load prices", error: true };
