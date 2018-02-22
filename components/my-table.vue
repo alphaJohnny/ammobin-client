@@ -162,9 +162,6 @@
 <script>
 export default {
   data: () => ({
-    // default page size
-    pageSize: 25,
-    searchQuery: "",
     sortKey: "minUnitCost",
     sortedListLength: -1,
     sortOrders: {
@@ -173,7 +170,6 @@ export default {
       minPrice: 1,
       minUnitCost: 1
     },
-    province: null,
     showVendors: {},
     provinces: [
       null,
@@ -191,10 +187,32 @@ export default {
       "YT"
     ],
     vendor: null,
-    defaultImg: require("~/assets/blank.png")
+    defaultImg: require("~/assets/blank.png"),
+    // move these to url params...
+    province: null,
+    searchQuery: "",
+    pageSize: 25
   }),
-  props: ["rows", "calibre", "page"],
+  props: ["rows"],
   computed: {
+    page() {
+      return parseInt((this.$route.query || {}).page, 10) || 1;
+    },
+    calibre() {
+      return (this.$route.query || {}).calibre;
+    },
+    // province() {
+    //   return (this.$route.query || {}).province;
+    // },
+    // searchQuery() {
+    //   return (this.$route.query || {}).searchQuery;
+    // },
+    // pageSize() {
+    //   return Math.min(
+    //     parseInt((this.$route.query || {}).pageSize, 10) || 25,
+    //     100
+    //   );
+    // },
     vendors() {
       if (!this.rows) {
         return [];
@@ -382,11 +400,10 @@ export default {
       this.sortOrders[key] = this.sortOrders[key] * -1;
     },
     goto(page) {
-      if (page > this.pages) {
-        this.$emit("update:page", this.pages);
-      } else {
-        this.$emit("update:page", page);
-      }
+      this.$router.push({
+        path: this.$route.path,
+        query: Object.assign({}, this.$route.query, { page })
+      });
       window.scroll(0, 0); //scroll to top of page
     },
     toggleVendors(name, row) {
@@ -402,7 +419,11 @@ export default {
       this.showVendors[name] = !open;
     },
     updateCalibre(calibre) {
-      this.$emit("update:calibre", calibre);
+      this.$router.push({
+        path: this.$route.path,
+        query: Object.assign({}, this.$route.query, { calibre })
+      });
+      window.scroll(0, 0); //scroll to top of page
     }
   }
 };

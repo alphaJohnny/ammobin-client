@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h1>{{$t('default.rimfire')}}</h1>
-    <my-table v-if="!error" v-bind:rows="rows" :calibre.sync="calibre" :page.sync="page" @pages="pages=$event"></my-table>
+    <my-table v-if="!error" v-bind:rows="rows"></my-table>
     <div v-if="error">{{$t('default.failedToLoad')}}</div>
   </div>
 </template>
@@ -23,9 +23,9 @@ export default {
 
   head() {
     const link = [];
-    const url = `https://ammobin.ca/${this.$i18n.locale !== "en"
-      ? this.$i18n.locale + "/"
-      : ""}rimfire`;
+    const url = `https://ammobin.ca/${
+      this.$i18n.locale !== "en" ? this.$i18n.locale + "/" : ""
+    }rimfire`;
 
     if (this.page > 1) {
       link.push({
@@ -47,8 +47,9 @@ export default {
         {
           hid: "description",
           name: "description",
-          content: `The place to view the best ${this
-            .calibre} rimfire prices across Canada.` //TODO: en francais
+          content: `The place to view the best ${
+            this.calibre
+          } rimfire prices across Canada.` //TODO: en francais
         }
       ],
       link
@@ -57,25 +58,18 @@ export default {
   components: {
     MyTable
   },
-  watch: {
-    page: function() {
-      updateUrl("rimfire", this.page, this.calibre);
-    },
-    calibre: function() {
-      updateUrl("rimfire", this.page, this.calibre);
-    }
-  },
   async asyncData({ error, query, app }) {
     try {
       const page = parseInt(query.page || "1");
       const calibre = query.calibre || "";
+      const pageSize = parseInt(query.pageSize || "25", 10);
       let res = await app.$axios.get(
         BASE_API_URL +
           `rimfire?calibre=${encodeURIComponent(calibre)}&page=${page}`
       );
       const rows = res.data;
 
-      return { rows, calibre, page };
+      return { rows, calibre, page, pages: Math.ceil(rows.length / pageSize) };
     } catch (e) {
       console.error(e);
       return { statusCode: 500, message: "Failed to load prices", error: true };
