@@ -160,6 +160,8 @@
 </template>
 
 <script>
+import { provinces2Char } from "./provinces";
+
 export default {
   data: () => ({
     // default page size
@@ -174,21 +176,7 @@ export default {
     },
     province: null,
     showVendors: {},
-    provinces: [
-      null,
-      "AB",
-      "BC",
-      "MB",
-      "NB",
-      "NS",
-      "NT",
-      "NU",
-      "ON",
-      "PE",
-      "QC",
-      "SK",
-      "YT"
-    ],
+    provinces: [null].concat(provinces2Char),
     vendor: null,
     defaultImg: require("~/assets/blank.png")
   }),
